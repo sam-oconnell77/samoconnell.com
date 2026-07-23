@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sam O'Connell — Engineer · Builder · Problem-solver</title>
+<meta name="description" content="Sam O'Connell — Mechanical & Manufacturing Engineering with Management at Trinity College Dublin. I turn problems into things that work, across software and hardware." />
+<meta property="og:title" content="Sam O'Connell" />
+<meta property="og:description" content="Mechanical & Manufacturing Engineering @ Trinity College Dublin. Innovation, problem-solving, and actually shipping." />
+<meta property="og:type" content="website" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   TOKENS — "The Drawing Board"
+   Sam O'Connell: Mechanical & Manufacturing Engineer who builds
+   across software and hardware. The site is an engineering
+   drawing / CAD viewport — warm-dark sheet, amber draft line,
+   green for "built / shipped".
+   ============================================================ */
+:root{
+  --ink:      #0E1116;
+  --ink-2:    #0A0C10;
+  --panel:    #151A22;
+  --panel-2:  #1B222C;
+  --line:     #29323F;
+  --line-2:   #3A4655;
+  --paper:    #ECE6DA;
+  --paper-dim:#B9C0CB;
+  --muted:    #6C7688;
+  --draft:    #F7A93B;   /* the active draw line (accent) */
+  --draft-soft: rgba(247,169,59,.14);
+  --built:    #57C88A;   /* shipped / built */
+  --built-soft: rgba(87,200,138,.12);
+
+  --f-display: "Instrument Serif", Georgia, serif;
+  --f-body: "Space Grotesk", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --maxw: 1180px;
+  --gutter: clamp(20px, 5vw, 64px);
+  --rail: 60px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--ink);color:var(--paper);font-family:var(--f-body);
+  font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.locked{overflow:hidden;height:100vh}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+::selection{background:var(--draft);color:var(--ink)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--draft);outline-offset:3px;border-radius:2px}
+
+/* custom cursor (desktop / fine-pointer only) */
+@media (hover:hover) and (pointer:fine){
+  body{cursor:none}
+  a,button,.proj,.int-card,.exp-card{cursor:none}
+  #cur,#curRing{position:fixed;top:0;left:0;z-index:120;pointer-events:none;mix-blend-mode:difference}
+  #cur{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--draft)}
+  #curRing{width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid var(--draft);border-radius:50%;
+    transition:width .18s var(--ease),height .18s var(--ease),margin .18s var(--ease),border-color .18s,opacity .2s}
+  #curRing.hot{width:56px;height:56px;margin:-28px 0 0 -28px;border-color:var(--built)}
+  #curRing::before{content:"";position:absolute;inset:50% auto auto 50%;width:1px;height:7px;
+    background:var(--draft);transform:translate(-50%,-50%)}
+  #curRing::after{content:"";position:absolute;inset:50% auto auto 50%;height:1px;width:7px;
+    background:var(--draft);transform:translate(-50%,-50%)}
+}
+#cur,#curRing{display:none}
+@media (hover:none),(pointer:coarse){#cur,#curRing{display:none !important}}
+@media (hover:hover) and (pointer:fine){#cur,#curRing{display:block}}
+
+/* ambient graticule */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;opacity:.16;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 40%,transparent 100%)}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 120% 90% at 50% -10%,transparent 40%,var(--ink-2) 100%)}
+
+/* ============ BOOT ============ */
+#boot{position:fixed;inset:0;z-index:100;background:var(--ink-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  transition:opacity .7s var(--ease),visibility .7s}
+#boot.done{opacity:0;visibility:hidden;pointer-events:none}
+.boot-mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
+.boot-mark{font-family:var(--f-display);font-size:clamp(48px,9vw,104px);line-height:.9;color:var(--paper)}
+.boot-mark em{color:var(--draft);font-style:italic}
+.boot-bar{width:min(340px,70vw);height:2px;background:var(--line);position:relative;overflow:hidden}
+.boot-bar i{position:absolute;inset:0 100% 0 0;background:var(--draft);box-shadow:0 0 12px var(--draft)}
+.boot-read{font-family:var(--f-mono);font-size:12px;color:var(--draft);letter-spacing:.2em;display:flex;gap:14px}
+.boot-read span:last-child{color:var(--muted)}
+
+/* ============ RAIL ============ */
+.cal-rail{position:fixed;top:0;right:0;bottom:0;width:var(--rail);z-index:40;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  border-left:1px solid var(--line);background:linear-gradient(90deg,transparent,rgba(10,12,16,.6))}
+.cal-ticks{position:absolute;top:0;bottom:0;left:14px;width:1px}
+.cal-tick{position:absolute;left:0;height:1px;width:8px;background:var(--line-2)}
+.cal-tick.major{width:16px;background:var(--muted)}
+.cal-ind{position:absolute;left:8px;width:22px;height:2px;background:var(--draft);box-shadow:0 0 10px var(--draft);transition:top .08s linear}
+.cal-read{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(90deg);white-space:nowrap;
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.32em;color:var(--muted);text-transform:uppercase}
+.cal-pct{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px;color:var(--draft);letter-spacing:.1em}
+
+/* ============ NAV ============ */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:18px var(--gutter);padding-right:calc(var(--gutter) + var(--rail));
+  transition:background .3s var(--ease),border-color .3s var(--ease);border-bottom:1px solid transparent}
+header.nav.stuck{background:rgba(14,17,22,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:13px;letter-spacing:.14em}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--built);box-shadow:0 0 10px var(--built);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.brand b{font-weight:600;color:var(--paper)}
+.nav-links{display:flex;gap:4px;font-family:var(--f-mono);font-size:12px;letter-spacing:.06em}
+.nav-links a{padding:7px 11px;color:var(--paper-dim);position:relative;text-transform:uppercase;transition:color .2s}
+.nav-links a .ch{color:var(--muted);margin-right:6px}
+.nav-links a:hover,.nav-links a:hover .ch{color:var(--draft)}
+.nav-toggle{display:none;background:none;border:1px solid var(--line);color:var(--paper);font-family:var(--f-mono);font-size:12px;padding:8px 12px;letter-spacing:.1em}
+
+main{position:relative;z-index:1}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+section{position:relative;padding:clamp(90px,14vh,160px) 0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--draft)}
+.eyebrow .idx{color:var(--draft)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:118px}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap}
+.hero-idlft{display:flex;gap:20px;align-items:center}
+/* photo frame */
+.photo{position:relative;width:96px;height:112px;border:1px solid var(--line-2);background:var(--panel);flex-shrink:0;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;padding:8px;line-height:1.5}
+.photo .cnr{position:absolute;width:9px;height:9px;border:1px solid var(--draft)}
+.photo .cnr.tl{top:4px;left:4px;border-right:0;border-bottom:0}
+.photo .cnr.tr{top:4px;right:4px;border-left:0;border-bottom:0}
+.photo .cnr.bl{bottom:4px;left:4px;border-right:0;border-top:0}
+.photo .cnr.br{bottom:4px;right:4px;border-left:0;border-top:0}
+.hero-meta{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;line-height:2}
+.hero-meta b{color:var(--paper-dim);font-weight:500}
+.hero-right{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;text-align:right;line-height:2}
+.hero-right b{color:var(--paper-dim);font-weight:500}
+.hero-right .now{color:var(--built)}
+.hero-right .now::before{content:"● ";animation:pulse 2s infinite}
+
+.hero-name{font-family:var(--f-display);font-weight:400;font-size:clamp(66px,15vw,220px);line-height:.86;letter-spacing:-.01em;margin:22px 0 0;color:var(--paper)}
+.hero-name .amp{color:var(--draft);font-style:italic}
+
+.scope-wrap{position:relative;margin:24px 0 6px;border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--ink));overflow:hidden;border-radius:3px}
+#scope{display:block;width:100%;height:240px}
+.scope-tag{position:absolute;top:12px;left:14px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;display:flex;gap:16px;align-items:center;pointer-events:none}
+.scope-tag .live{color:var(--built)}
+.scope-tag .live::before{content:"● ";animation:pulse 1.6s infinite}
+.scope-foot{position:absolute;bottom:12px;right:14px;left:14px;display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.12em;pointer-events:none}
+
+.hero-sub{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;flex-wrap:wrap;margin-top:26px}
+.hero-thesis{max-width:54ch;font-size:clamp(17px,2vw,21px);color:var(--paper-dim);line-height:1.5}
+.hero-thesis b{color:var(--paper);font-weight:500}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:13px 20px;border:1px solid var(--line-2);color:var(--paper);transition:all .22s var(--ease);background:none;white-space:nowrap}
+.btn:hover{border-color:var(--draft);color:var(--draft);background:var(--draft-soft)}
+.btn.solid{background:var(--draft);color:var(--ink);border-color:var(--draft);font-weight:500}
+.btn.solid:hover{background:transparent;color:var(--draft)}
+.scroll-hint{margin-top:52px;font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--muted);display:flex;align-items:center;gap:12px;text-transform:uppercase}
+.scroll-hint .ln{width:1px;height:34px;background:linear-gradient(var(--draft),transparent);animation:drop 2s var(--ease) infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}50.1%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ============ ABOUT ============ */
+.about-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:clamp(30px,5vw,70px);margin-top:48px;align-items:start}
+.about-lead{font-family:var(--f-display);font-size:clamp(26px,3.4vw,42px);line-height:1.2;color:var(--paper);margin-bottom:26px}
+.about-lead em{color:var(--draft);font-style:italic}
+.about-body p{color:var(--paper-dim);margin-bottom:16px;max-width:58ch}
+.about-body p b{color:var(--paper);font-weight:500}
+.spec-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;overflow:hidden}
+.spec-card .sc-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.spec-card .sc-head .ok{color:var(--built)}
+.spec-row{display:flex;justify-content:space-between;gap:16px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14px}
+.spec-row:last-child{border-bottom:0}
+.spec-row .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.spec-row .v{color:var(--paper);text-align:right}
+.spec-row .v small{display:block;color:var(--paper-dim);font-size:12px;font-family:var(--f-mono)}
+
+/* ============ PROJECTS ============ */
+.proj-list{margin-top:52px;border-top:1px solid var(--line)}
+.proj{display:grid;grid-template-columns:56px 1fr auto;gap:clamp(18px,3vw,48px);padding:34px 4px;border-bottom:1px solid var(--line);position:relative;transition:background .3s var(--ease)}
+.proj:hover{background:linear-gradient(90deg,var(--draft-soft),transparent 60%)}
+.proj .p-no{font-family:var(--f-mono);font-size:13px;color:var(--muted);padding-top:6px}
+.proj:hover .p-no{color:var(--draft)}
+.p-main{min-width:0}
+.p-title{font-family:var(--f-display);font-size:clamp(28px,4vw,46px);line-height:1;color:var(--paper);letter-spacing:-.01em;display:inline-block}
+.p-title .arw{display:inline-block;color:var(--draft);opacity:0;transform:translateX(-8px);transition:.3s var(--ease);margin-left:8px}
+.proj:hover .p-title .arw{opacity:1;transform:none}
+a.p-title:hover{color:var(--draft)}
+.p-role{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--draft);margin:12px 0 10px}
+.p-desc{color:var(--paper-dim);max-width:62ch;font-size:15px}
+.p-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.tag{font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;padding:5px 10px;border:1px solid var(--line);color:var(--paper-dim);border-radius:2px;background:var(--ink)}
+.p-meter{width:170px;flex-shrink:0}
+.pm-label{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:8px}
+.pm-label .val{color:var(--built)}
+.pm-track{height:2px;background:var(--line);position:relative;overflow:hidden}
+.pm-fill{position:absolute;inset:0 100% 0 0;background:var(--built);box-shadow:0 0 8px var(--built);transition:right 1.1s var(--ease)}
+.proj.in .pm-fill{right:var(--rt,20%)}
+.pm-scale{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--f-mono);font-size:9px;color:var(--muted)}
+.p-status{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-top:14px;color:var(--muted)}
+.p-status .live{color:var(--built)}
+.p-status .wip{color:var(--draft)}
+
+/* ============ MILESTONES (log) ============ */
+.log{margin-top:52px}
+.log-entry{display:grid;grid-template-columns:130px 1fr;gap:clamp(18px,3vw,44px);padding:26px 0;border-top:1px solid var(--line);align-items:start}
+.log-entry:last-child{border-bottom:1px solid var(--line)}
+.log-date{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em;padding-top:4px}
+.log-date b{display:block;color:var(--draft);font-weight:500;font-size:13px;margin-bottom:2px}
+.log-body h3{font-family:var(--f-display);font-size:clamp(22px,2.8vw,32px);line-height:1.1;color:var(--paper);font-weight:400}
+.log-body .org{font-family:var(--f-mono);font-size:12px;color:var(--paper-dim);letter-spacing:.06em;margin:6px 0 10px}
+.log-body p{color:var(--paper-dim);max-width:64ch;font-size:15px}
+.badge{display:inline-block;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--draft);color:var(--draft);border-radius:2px;margin-top:12px}
+.badge.win{border-color:var(--built);color:var(--built)}
+
+/* ============ ROLES ============ */
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:52px}
+.exp-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:24px;transition:border-color .3s var(--ease),transform .3s var(--ease);position:relative;overflow:hidden}
+.exp-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--line);transition:background .3s}
+.exp-card:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.exp-card:hover::after{background:var(--draft)}
+.exp-when{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:16px}
+.exp-when .tag-now{color:var(--built)}
+.exp-card h3{font-family:var(--f-display);font-size:24px;font-weight:400;line-height:1.1;color:var(--paper)}
+.exp-card .co{font-family:var(--f-mono);font-size:12px;color:var(--draft);margin:6px 0 12px;letter-spacing:.04em}
+.exp-card p{color:var(--paper-dim);font-size:14px}
+
+/* ============ INTERESTS ============ */
+.int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:52px}
+.int-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:22px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;transition:border-color .3s,background .3s}
+.int-card:hover{border-color:var(--draft);background:var(--panel-2)}
+.int-card .ic-tag{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.int-card h4{font-family:var(--f-display);font-size:26px;font-weight:400;color:var(--paper);margin:auto 0 8px;line-height:1.05}
+.int-card p{font-size:13.5px;color:var(--paper-dim)}
+.int-card .accent{font-family:var(--f-mono);font-size:11px;color:var(--draft)}
+
+/* ============ CONTACT ============ */
+#contact{padding-bottom:0}
+.contact-inner{border-top:1px solid var(--line);padding-top:clamp(60px,10vh,110px)}
+.contact-big{font-family:var(--f-display);font-size:clamp(44px,8vw,120px);line-height:.92;color:var(--paper);letter-spacing:-.01em}
+.contact-big em{color:var(--draft);font-style:italic}
+.contact-sub{color:var(--paper-dim);max-width:48ch;margin:24px 0 34px;font-size:17px}
+.contact-links{display:flex;flex-wrap:wrap;gap:12px}
+.c-link{display:flex;align-items:center;gap:10px;padding:14px 20px;border:1px solid var(--line);font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;transition:all .22s var(--ease);border-radius:2px}
+.c-link .k{color:var(--muted)}
+.c-link:hover{border-color:var(--draft);background:var(--draft-soft);transform:translateY(-2px)}
+.c-link:hover .k{color:var(--draft)}
+
+footer{margin-top:clamp(70px,12vh,130px);border-top:1px solid var(--line);padding:26px var(--gutter);padding-right:calc(var(--gutter) + var(--rail));display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
+footer .amp{color:var(--draft)}
+
+@media (max-width:860px){
+  :root{--rail:0px}
+  .cal-rail{display:none}
+  header.nav{padding-right:var(--gutter)}
+  footer{padding-right:var(--gutter)}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--ink);border-bottom:1px solid var(--line);padding:8px 0}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:14px var(--gutter)}
+  .nav-toggle{display:block}
+  .about-grid{grid-template-columns:1fr}
+  .proj{grid-template-columns:34px 1fr;gap:16px}
+  .p-meter{grid-column:1/-1;width:100%;margin-top:14px}
+  .log-entry{grid-template-columns:1fr;gap:8px}
+  .hero-sub{flex-direction:column}
+  .hero-right{text-align:left}
+}
+@media (max-width:520px){#scope{height:190px}.scope-foot{font-size:9px}.hero-name{font-size:clamp(52px,13vw,220px)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition-duration:.001ms !important}
+  .reveal{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body class="locked">
+<div id="cur"></div><div id="curRing"></div>
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+
+<!-- BOOT -->
+<div id="boot">
+  <div class="boot-mono">Trinity College Dublin · Mech. &amp; Manufacturing Eng.</div>
+  <div class="boot-mark">S<em>.</em>O'C</div>
+  <div class="boot-bar"><i id="bootFill"></i></div>
+  <div class="boot-read"><span id="bootPct">LOADING DRAWING… 000%</span><span id="bootStage">loading sheet</span></div>
+</div>
+
+<!-- RAIL -->
+<div class="cal-rail" aria-hidden="true">
+  <div class="cal-ticks" id="calTicks"></div>
+  <div class="cal-ind" id="calInd" style="top:0"></div>
+  <div class="cal-read">Sheet position</div>
+  <div class="cal-pct" id="calPct">000</div>
+</div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a href="#hero" class="brand"><span class="dot"></span><b>SAM&nbsp;O'CONNELL</b></a>
+  <nav class="nav-links" id="navLinks">
+    <a href="#about"><span class="ch">01</span>Profile</a>
+    <a href="#projects"><span class="ch">02</span>Work</a>
+    <a href="#achievements"><span class="ch">03</span>Milestones</a>
+    <a href="#roles"><span class="ch">04</span>Roles</a>
+    <a href="#interests"><span class="ch">05</span>Off the pitch</a>
+    <a href="#contact"><span class="ch">06</span>Contact</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">MENU</button>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="wrap">
+      <div class="hero-top reveal in">
+        <div class="hero-idlft">
+          <!-- PHOTO: drop your headshot in as photo.jpg (same folder) and it appears automatically -->
+          <div class="photo">
+            <img src="photo.jpg" alt="Sam O'Connell" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+            <div class="ph-empty" style="display:none">[ your<br>photo ]</div>
+            <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+          </div>
+          <div class="hero-meta">Dublin, IE<br><b>Originally Cork</b></div>
+        </div>
+        <div class="hero-right">
+          Mech. &amp; Manufacturing Eng. + Mgmt<br><b>Trinity College Dublin</b><br><span class="now">Always building</span>
+        </div>
+      </div>
+
+      <h1 class="hero-name reveal in">Sam<span class="amp">·</span><wbr>O'Connell</h1>
+
+      <div class="scope-wrap reveal in d1">
+        <canvas id="scope"></canvas>
+        <div class="scope-tag"><span class="live">DRIVE ENGAGED</span><span>ASSY-001 · S.OCONNELL</span></div>
+        <div class="scope-foot">
+          <span id="scopeReadA">RPM 000</span>
+          <span>move cursor to drive →</span>
+          <span id="scopeReadB">RATIO 1:1</span>
+        </div>
+      </div>
+
+      <div class="hero-sub">
+        <p class="hero-thesis reveal in d1">
+          Mechanical &amp; Manufacturing Engineering student who likes turning problems into things that <b>work</b> —
+          across software, hardware, and the occasional startup. Focused on <b>innovation</b>,
+          problem-solving, and actually <b>shipping</b>.
+        </p>
+        <div class="hero-cta reveal in d2">
+          <a href="#projects" class="btn solid">View work</a>
+          <a href="#contact" class="btn">Get in touch</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint reveal in d3"><span class="ln"></span>Scroll to explore</div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="idx">01</span> Profile</div>
+      <div class="about-grid">
+        <div>
+          <p class="about-lead reveal">I like finding <em>innovative solutions</em> to real problems — and then actually building them.</p>
+          <div class="about-body reveal d1">
+            <p>I'm <b>Sam O'Connell</b>, a Mechanical &amp; Manufacturing Engineering with Management student at <b>Trinity College Dublin</b> (integrated master's, 2024–2029). I grew up in <b>Cork</b> and moved to Dublin to study, after finishing school at Presentation Brothers College.</p>
+            <p>I build across <b>software and hardware</b> — web platforms like SlotSpace and the Trinity Hall welfare site, and hardware like Guardian, a device I designed and pitched in second year. Whatever the medium, I care about innovation, solving the actual problem, and getting things over the line in a fast-moving, creative world.</p>
+            <p>When I'm not building, I'm usually on a football pitch or chasing the next idea.</p>
+          </div>
+        </div>
+        <div class="spec-card reveal d2">
+          <div class="sc-head"><span>PROFILE</span><span class="ok">◇ ACTIVE</span></div>
+          <div class="spec-row"><span class="k">Institution</span><span class="v">Trinity College Dublin<small>Integrated M.Eng</small></span></div>
+          <div class="spec-row"><span class="k">Course</span><span class="v">Mech. &amp; Manufacturing<small>Engineering with Management</small></span></div>
+          <div class="spec-row"><span class="k">Duration</span><span class="v">2024 — 2029</span></div>
+          <div class="spec-row"><span class="k">From</span><span class="v">Cork → Dublin</span></div>
+          <div class="spec-row"><span class="k">Tools</span><span class="v">SolidWorks · Python<small>Excel · AI workflows</small></span></div>
+          <div class="spec-row"><span class="k">Strengths</span><span class="v">Problem-solving<small>Leadership &amp; people</small></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="idx">02</span> Selected work</div>
+      <div class="proj-list">
+
+        <article class="proj reveal" style="--rt:30%">
+          <div class="p-no">/01</div>
+          <div class="p-main">
+            <a class="p-title" href="https://slotspace.ie" target="_blank" rel="noopener">SlotSpace<span class="arw">↗</span></a>
+            <div class="p-role">Founder &amp; builder · Web platform</div>
+            <p class="p-desc">A booking platform that makes booking management quick and easy for small businesses. I came up with the idea and built the whole thing — from concept to live product.</p>
+            <div class="p-tags"><span class="tag">Booking platform</span><span class="tag">Small business</span><span class="tag">Full-stack</span><span class="tag">Founder</span></div>
+            <div class="p-status">STATUS: <span class="wip">◐ live · not yet pitched</span></div>
+          </div>
+          <div class="p-meter">
+            <div class="pm-label"><span>Build progress</span><span class="val" style="color:var(--draft)">70%</span></div>
+            <div class="pm-track"><span class="pm-fill" style="background:var(--draft);box-shadow:0 0 8px var(--draft)"></span></div>
+            <div class="pm-scale"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </article>
+
+        <article class="proj reveal" style="--rt:40%">
+          <div class="p-no">/02</div>
+          <div class="p-main">
+            <div class="p-title">Scout<span class="arw">↗</span></div>
+            <div class="p-role">Team project · Browser extension</div>
+            <p class="p-desc">A customizable browser extension that blocks unwanted World Cup spoilers. Built with my team at a hackathon — <b style="color:var(--paper)">3rd place at the UCC ACM World Cup Hackathon</b>.</p>
+            <div class="p-tags"><span class="tag">Browser extension</span><span class="tag">Hackathon</span><span class="tag">3rd place</span><span class="tag">Team</span></div>
+            <div class="p-status">STATUS: <span class="wip">◐ demoed &amp; pitched</span></div>
+          </div>
+          <div class="p-meter">
+            <div class="pm-label"><span>Build progress</span><span class="val" style="color:var(--draft)">60%</span></div>
+            <div class="pm-track"><span class="pm-fill" style="background:var(--draft);box-shadow:0 0 8px var(--draft)"></span></div>
+            <div class="pm-scale"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </article>
+
+        <article class="proj reveal" style="--rt:0%">
+          <div class="p-no">/03</div>
+          <div class="p-main">
+            <a class="p-title" href="https://trinityhalljcrwelfare.com" target="_blank" rel="noopener">Trinity Hall Welfare<span class="arw">↗</span></a>
+            <div class="p-role">Founder &amp; builder · Web platform</div>
+            <p class="p-desc">A website built around the wellbeing needs of first-year students living in Trinity Hall, Dublin. I came up with the idea and built the site — it now <b style="color:var(--paper)">serves over 1,000 students</b>.</p>
+            <div class="p-tags"><span class="tag">Student wellbeing</span><span class="tag">1,000+ users</span><span class="tag">Web app</span><span class="tag">Founder</span></div>
+            <div class="p-status">STATUS: <span class="live">● live</span></div>
+          </div>
+          <div class="p-meter">
+            <div class="pm-label"><span>Build progress</span><span class="val">100%</span></div>
+            <div class="pm-track"><span class="pm-fill"></span></div>
+            <div class="pm-scale"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </article>
+
+        <article class="proj reveal" style="--rt:0%">
+          <div class="p-no">/04</div>
+          <div class="p-main">
+            <div class="p-title">Guardian<span class="arw">↗</span></div>
+            <div class="p-role">Hardware · Mechatronics</div>
+            <p class="p-desc">A location-tracking and notification device children can clip to their backpack on the way to school — a safe substitute for a smartphone, aimed at parents. <b style="color:var(--paper)">Designed, built and pitched in just six weeks</b> as a second-year project.</p>
+            <div class="p-tags"><span class="tag">Mechatronics</span><span class="tag">Hardware</span><span class="tag">6-week build</span><span class="tag">Product</span></div>
+            <div class="p-status">STATUS: <span class="live">● built &amp; presented</span></div>
+          </div>
+          <div class="p-meter">
+            <div class="pm-label"><span>Build progress</span><span class="val">100%</span></div>
+            <div class="pm-track"><span class="pm-fill"></span></div>
+            <div class="pm-scale"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </article>
+
+        <article class="proj reveal" style="--rt:80%">
+          <div class="p-no">/05</div>
+          <div class="p-main">
+            <div class="p-title">TOP<span class="arw">↗</span></div>
+            <div class="p-role">Research · Prototype</div>
+            <p class="p-desc">Token Optimisation Protocol — researching current problems with AI use in the modern world and prototyping solutions. Turned up meaningful data findings and analysis inside two weeks.</p>
+            <div class="p-tags"><span class="tag">AI research</span><span class="tag">Data analysis</span><span class="tag">Prototype</span></div>
+            <div class="p-status">STATUS: <span class="wip">◐ research in progress</span></div>
+          </div>
+          <div class="p-meter">
+            <div class="pm-label"><span>Build progress</span><span class="val" style="color:var(--draft)">20%</span></div>
+            <div class="pm-track"><span class="pm-fill" style="background:var(--draft);box-shadow:0 0 8px var(--draft)"></span></div>
+            <div class="pm-scale"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MILESTONES -->
+  <section id="achievements">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="idx">03</span> Milestones &amp; awards</div>
+      <div class="log">
+
+        <div class="log-entry reveal">
+          <div class="log-date"><b>2024</b>Leaving Cert</div>
+          <div class="log-body">
+            <h3>625 points · 7 H1s · 100th percentile</h3>
+            <div class="org">Leaving Certificate</div>
+            <p>A maximum-points Leaving Certificate — top of the cohort nationally.</p>
+            <span class="badge win">◇ Top result</span>
+          </div>
+        </div>
+
+        <div class="log-entry reveal">
+          <div class="log-date"><b>2024</b>Scholarship</div>
+          <div class="log-body">
+            <h3>Naughton Scholarship Award</h3>
+            <div class="org">Naughton Foundation</div>
+            <p>Awarded to high-achieving students entering STEM at third level.</p>
+            <span class="badge">◇ Awarded</span>
+          </div>
+        </div>
+
+        <div class="log-entry reveal">
+          <div class="log-date"><b>2024</b>Award</div>
+          <div class="log-body">
+            <h3>Trinity Entrance Exhibition Award</h3>
+            <div class="org">Trinity College Dublin</div>
+            <p>Recognising outstanding results on entry to Trinity.</p>
+            <span class="badge">◇ Awarded</span>
+          </div>
+        </div>
+
+        <div class="log-entry reveal">
+          <div class="log-date"><b>2024</b>Competition</div>
+          <div class="log-body">
+            <h3>IAMTA Cork Applied Maths Competition — Winner</h3>
+            <div class="org">Irish Applied Maths Teachers' Association</div>
+            <p>First place in the Cork regional applied maths competition.</p>
+            <span class="badge win">◇ 1st place</span>
+          </div>
+        </div>
+
+        <div class="log-entry reveal">
+          <div class="log-date"><b>2026</b>Hackathon</div>
+          <div class="log-body">
+            <h3>UCC ACM World Cup Hackathon — 3rd place</h3>
+            <div class="org">UCC ACM · with team</div>
+            <p>Third place overall for Scout, a browser extension that blocks unwanted World Cup spoilers.</p>
+            <span class="badge win">◇ 3rd place</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section id="roles">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="idx">04</span> Leadership &amp; roles</div>
+      <div class="exp-grid">
+        <div class="exp-card reveal">
+          <div class="exp-when"><span>2022</span><span>VOLUNTEERING</span></div>
+          <h3>Chief Volunteer Coordinator</h3>
+          <div class="co">SHARE · Cork</div>
+          <p>Coordinated volunteers for SHARE, the Cork student-run charity supporting the city's elderly — a role built entirely on organisation and people skills.</p>
+        </div>
+        <div class="exp-card reveal d1">
+          <div class="exp-when"><span>2025 — 26</span><span class="tag-now">● NOW</span></div>
+          <h3>Welfare Team Member</h3>
+          <div class="co">Trinity Hall</div>
+          <p>Part of the welfare team supporting first-year students in Trinity's largest residence — the same community SlotSpace's sibling welfare site was built for.</p>
+        </div>
+        <div class="exp-card reveal d2">
+          <div class="exp-when"><span>ONGOING</span><span class="tag-now">● NOW</span></div>
+          <h3>Member</h3>
+          <div class="co">Engineering Society, TCD</div>
+          <p>Active member of Trinity's Engineering Society.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFF THE PITCH -->
+  <section id="interests">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="idx">05</span> Off the pitch</div>
+      <div class="int-grid">
+        <div class="int-card reveal">
+          <span class="ic-tag">// football</span>
+          <h4>Competitive soccer</h4>
+          <p>Years of representative football — Cork City, Cobh Ramblers, College Corinthians and Cork Schoolboys.</p>
+          <p class="accent">SFAI U16 All-Ireland Cup · 2022</p>
+        </div>
+        <div class="int-card reveal d1">
+          <span class="ic-tag">// screen</span>
+          <h4>Film &amp; acting</h4>
+          <p>Starred in <em>Vindicta</em> — winner of Best Picture at the First Cut! Youth Film Festival.</p>
+          <p class="accent">Best Picture · 2022</p>
+        </div>
+        <div class="int-card reveal d2">
+          <span class="ic-tag">// making</span>
+          <h4>Building &amp; tinkering</h4>
+          <p>Always have a side project on the go — usually something that mixes software and hardware, and starts with "what if…".</p>
+        </div>
+        <div class="int-card reveal d3">
+          <span class="ic-tag">// now</span>
+          <h4>Currently</h4>
+          <p style="color:var(--muted)">[Optional: a line you can update over time — what you're building, reading, or listening to this month.]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-inner">
+        <div class="eyebrow reveal"><span class="idx">06</span> Contact</div>
+        <h2 class="contact-big reveal">Let's build<br>something <em>good.</em></h2>
+        <p class="contact-sub reveal d1">Always up for interesting problems, collaborations, and ideas. If you're working on something and need someone who'll actually build it — get in touch.</p>
+        <div class="contact-links reveal d2">
+          <a class="c-link" href="mailto:samoconnell06@gmail.com"><span class="k">mail</span> samoconnell06@gmail.com</a>
+          <a class="c-link" href="https://www.linkedin.com/in/sam-o-connell/" target="_blank" rel="noopener"><span class="k">in</span> LinkedIn</a>
+          <a class="c-link" href="https://github.com/sam-oconnell77" target="_blank" rel="noopener"><span class="k">/</span> GitHub</a>
+          <a class="c-link" href="https://www.instagram.com/sam_oconnell77/" target="_blank" rel="noopener"><span class="k">@</span> Instagram</a>
+          <a class="c-link" href="https://drive.google.com/file/d/1sw18cXmJGTU1P7fMTi0CFhh6XcjvaK5j/view" target="_blank" rel="noopener"><span class="k">pdf</span> CV / Résumé</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>SAM O'CONNELL <span class="amp">·</span> © 2026 <span class="amp">·</span> DUBLIN</span>
+  <span>Designed &amp; built to spec.</span>
+</footer>
+
+<script>
+/* ============ GEAR TRAIN — the signature. Cursor drives it. ============ */
+(function(){
+  const cv=document.getElementById('scope'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const readA=document.getElementById('scopeReadA'), readB=document.getElementById('scopeReadB');
+  let W,H,dpr, drive=0.006, targetDrive=0.006, ang=0;
+
+  // gear train: teeth counts; radius proportional to teeth (equal module).
+  const gears=[
+    {z:18, s:+1},
+    {z:12, s:-1},
+    {z:28, s:+1},
+    {z:10, s:+1}
+  ];
+
+  function size(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size(); window.addEventListener('resize',size);
+
+  cv.addEventListener('pointermove',e=>{
+    const r=cv.getBoundingClientRect();
+    const mxN=(e.clientX-r.left)/r.width;        // 0..1 across
+    targetDrive=(mxN-0.5)*0.06;                   // left = reverse, right = forward, centre slow
+  });
+  cv.addEventListener('pointerleave',()=>{ targetDrive=0.006; });
+
+  function drawGear(cx,cy,z,rp,rot){
+    const m=2*rp/z, ra=rp+m*0.9, rd=rp-m*1.1, P=Math.PI*2/z;
+    // toothed outline
+    ctx.beginPath();
+    for(let k=0;k<z;k++){
+      const a=rot+k*P;
+      const pts=[[a+0.06*P,ra],[a+0.44*P,ra],[a+0.56*P,rd],[a+0.94*P,rd]];
+      for(let i=0;i<pts.length;i++){
+        const x=cx+Math.cos(pts[i][0])*pts[i][1], y=cy+Math.sin(pts[i][0])*pts[i][1];
+        if(k===0&&i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+    }
+    ctx.closePath();
+    ctx.strokeStyle='#F7A93B'; ctx.lineWidth=1.6; ctx.shadowColor='#F7A93B'; ctx.shadowBlur=8; ctx.stroke(); ctx.shadowBlur=0;
+    // pitch circle (faint dashed)
+    ctx.beginPath(); ctx.setLineDash([2,4]); ctx.arc(cx,cy,rp,0,Math.PI*2);
+    ctx.strokeStyle='rgba(87,200,138,.28)'; ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
+    // hub + centre cross
+    ctx.beginPath(); ctx.arc(cx,cy,Math.max(6,rp*0.16),0,Math.PI*2); ctx.strokeStyle='rgba(236,230,218,.5)'; ctx.lineWidth=1; ctx.stroke();
+    const cl=rp*0.55;
+    ctx.beginPath(); ctx.moveTo(cx-cl,cy); ctx.lineTo(cx+cl,cy); ctx.moveTo(cx,cy-cl); ctx.lineTo(cx,cy+cl);
+    ctx.strokeStyle='rgba(108,118,136,.7)'; ctx.stroke();
+    // teeth-count label
+    ctx.fillStyle='rgba(108,118,136,.9)'; ctx.font='9px JetBrains Mono, monospace'; ctx.textAlign='center';
+    ctx.fillText('z='+z, cx, cy+rp+m+9);
+  }
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    // datum baseline
+    ctx.beginPath(); ctx.setLineDash([1,5]); ctx.moveTo(0,H*0.5); ctx.lineTo(W,H*0.5);
+    ctx.strokeStyle='rgba(41,50,63,.9)'; ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
+
+    // layout gears tangent along baseline, scaled to fit
+    const unit=1;
+    let radii=gears.map(g=>g.z*unit);
+    // idler (last) sits above gear[2] instead of inline
+    const inline=[0,1,2];
+    let totalW=0; for(let i of inline) totalW+=radii[i]*2; totalW-=0; // sum diameters
+    // spacing = sum of tangent gaps
+    let span=radii[0]+2*radii[1]+2*radii[2]; // centre0..centre2 distance approx
+    // compute a scale so the assembly fits ~70% width and ~ H
+    const wantW=W*0.62, wantH=H*0.66;
+    const rawSpan=(radii[0])+ (radii[0]+radii[1]) + (radii[1]+radii[2]); // x of last centre from first edge-ish
+    let sc=Math.min(wantW/(2*radii[2]+ (radii[0]+radii[1])+(radii[1]+radii[2])), wantH/(2*radii[2]));
+    sc=Math.max(sc,0.6);
+    const R=radii.map(r=>r*sc);
+
+    const cy=H*0.5;
+    let x0=W*0.5 - ((R[0]+R[1])+(R[1]+R[2]))/2 + R[0]*0; // centre the chain
+    const c0x=Math.max(R[0]+10, x0);
+    const c1x=c0x+R[0]+R[1];
+    const c2x=c1x+R[1]+R[2];
+    // idler meshes ABOVE the small gear (gear 1), straight up — stays fully in frame
+    const idlAng=-Math.PI*0.5;
+    const c3x=c1x+Math.cos(idlAng)*(R[1]+R[3]);
+    const c3y=cy+Math.sin(idlAng)*(R[1]+R[3]);
+
+    // angular positions (exact ratios keep them meshed)
+    const base=ang;
+    const a0=gears[0].s*base + 0;
+    const a1=gears[1].s*base*(gears[0].z/gears[1].z) + Math.PI/gears[1].z;
+    const a2=gears[2].s*base*(gears[0].z/gears[2].z) + 0;
+    const a3=gears[3].s*base*(gears[0].z/gears[3].z) + Math.PI/gears[3].z;
+
+    drawGear(c0x,cy,gears[0].z,R[0],a0);
+    drawGear(c1x,cy,gears[1].z,R[1],a1);
+    drawGear(c2x,cy,gears[2].z,R[2],a2);
+    drawGear(c3x,c3y,gears[3].z,R[3],a3);
+
+    // title-block corner
+    ctx.textAlign='left'; ctx.fillStyle='rgba(108,118,136,.85)'; ctx.font='9px JetBrains Mono, monospace';
+    ctx.fillText('DRWG 001 — GEAR TRAIN — SCALE 1:1', 14, H-14);
+
+    drive+=(targetDrive-drive)*0.06;
+    ang+=drive;
+    const rpm=Math.abs(drive)*1900;
+    if(readA) readA.textContent='RPM '+String(Math.round(rpm)).padStart(3,'0');
+    if(readB) readB.textContent='RATIO '+gears[0].z+':'+gears[2].z;
+
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  if(reduce){ ang=0.4; frame(); } else requestAnimationFrame(frame);
+})();
+
+/* ============ CUSTOM CURSOR ============ */
+(function(){
+  const fine=window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if(!fine) return;
+  const dot=document.getElementById('cur'), ring=document.getElementById('curRing');
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;dot.style.transform='translate('+mx+'px,'+my+'px)';});
+  const hot='a,button,.proj,.int-card,.exp-card,.c-link,.btn';
+  addEventListener('pointerover',e=>{ if(e.target.closest(hot)) ring.classList.add('hot'); });
+  addEventListener('pointerout',e=>{ if(e.target.closest(hot)) ring.classList.remove('hot'); });
+  (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.transform='translate('+rx+'px,'+ry+'px)'; requestAnimationFrame(loop); })();
+})();
+
+/* ============ BOOT ============ */
+(function(){
+  const boot=document.getElementById('boot'),fill=document.getElementById('bootFill'),pct=document.getElementById('bootPct'),stage=document.getElementById('bootStage');
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stages=['loading sheet','setting datum','meshing gears','tightening bolts','ready'];
+  function finish(){boot.classList.add('done');document.body.classList.remove('locked');}
+  if(reduce||sessionStorage.getItem('booted2')){finish();return;}
+  sessionStorage.setItem('booted2','1');
+  let p=0; const iv=setInterval(()=>{
+    p+=Math.random()*9+3;
+    if(p>=100){p=100;clearInterval(iv);setTimeout(finish,420);}
+    fill.style.right=(100-p)+'%';
+    pct.textContent='LOADING DRAWING… '+String(Math.floor(p)).padStart(3,'0')+'%';
+    stage.textContent=stages[Math.min(stages.length-1,Math.floor(p/22))];
+  },130);
+})();
+
+/* ============ NAV ============ */
+(function(){
+  const nav=document.getElementById('nav'),links=document.getElementById('navLinks'),toggle=document.getElementById('navToggle');
+  addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>40));
+  toggle.addEventListener('click',()=>links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+})();
+
+/* ============ REVEAL ============ */
+(function(){
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+})();
+
+/* ============ RAIL ============ */
+(function(){
+  const ticks=document.getElementById('calTicks'),ind=document.getElementById('calInd'),pct=document.getElementById('calPct');
+  if(!ticks) return;
+  const N=40; for(let i=0;i<=N;i++){const el=document.createElement('div');el.className='cal-tick'+(i%5===0?' major':'');el.style.top=(i/N*100)+'%';ticks.appendChild(el);}
+  function update(){const h=document.documentElement.scrollHeight-innerHeight;const p=h>0?scrollY/h:0;ind.style.top=(p*ticks.parentElement.clientHeight)+'px';if(pct)pct.textContent=String(Math.round(p*100)).padStart(3,'0');}
+  addEventListener('scroll',update,{passive:true}); addEventListener('resize',update); update();
+})();
+</script>
+</body>
+</html>
