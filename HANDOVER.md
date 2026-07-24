@@ -12,8 +12,8 @@ This **supersedes the earlier handover** of the same date (written before any co
 
 | Item | State |
 |---|---|
-| Code | `index.html` — a single self-contained file, 802 lines / 48 KB. No build step, no dependencies to install. |
-| Repo | **None yet.** Not in git. |
+| Code | `index.html` — a single self-contained file, ~850 lines / 57 KB (+ `og.png`, `apple-touch-icon.png`). No build step, no dependencies to install. |
+| Repo | **Local git** (initialised 23 Jul 2026; see `git log` for the change record). No GitHub remote yet. |
 | Deployment | **None yet.** |
 | Domain | `samoconnell.com` — registered, **parked at Porkbun** (A records `207.207.210.50` / `207.207.210.36`; `www` CNAMEs to the same). Parking default `robots.txt` blocks all crawling. |
 | Vercel | Team **"Sam's projects"** (`sam-oconnell77-projects`, id `team_uQtafh2byaXdg7AmaEtxC8hI`). Only project: `slotspace`. |
@@ -98,9 +98,9 @@ for (let y=0; y<c.height; y++) {
 console.log({top, bot, h:c.height});  // want top > 1 and bot < h-1
 ```
 
-### Known technical debt (safe to clean up)
+### Known technical debt
 
-In the gear layout block there are leftover unused variables — `unit`, `inline`, `totalW`, `span`, `rawSpan` — computed but never read. There's also a **stale comment** saying *"idler (last) sits above gear[2]"*; it actually sits above gear **1**. Harmless, but worth tidying on first pass.
+**Resolved 24 Jul 2026** — the unused gear-layout variables and the stale idler comment were removed in the cleanup pass. Note the module list above has evolved since this doc was written: the boot IIFE now runs FIRST in the script block (storage-guarded, click/key-skippable, dispatches a resize + honours `location.hash` on finish), the gear loop pauses off-screen, the cursor ring sleeps when converged, a mail-copy module was added, the rail caches its metrics, and a `<noscript>` stylesheet degrades everything script-driven. `git log` is the authoritative change record.
 
 ---
 
@@ -127,7 +127,7 @@ No answers for: additional interests, what he's currently reading, whether he wa
 
 | Asset | Where it goes |
 |---|---|
-| **Headshot** | Save as `photo.jpg` beside `index.html` — the hero slot picks it up automatically (there's an `onerror` fallback showing a placeholder until then). |
+| **Headshot** | Save as `photo.jpg` beside `index.html` — the hero slot picks it up automatically (the `onerror` fallback now shows a deliberate "FIG. 01 — PORTRAIT PENDING" annotation until then). |
 | Scout screenshot | Project 02 — no image slot built yet |
 | Guardian screenshot | Project 04 — no image slot built yet |
 | Excel certificate | No slot yet; he offered to provide it |
