@@ -144,7 +144,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--draft);outline-offs
 header.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
   padding:18px var(--gutter);padding-right:calc(var(--gutter) + var(--rail));
   transition:background .3s var(--ease),border-color .3s var(--ease);border-bottom:1px solid transparent}
-header.nav.stuck{background:rgba(14,17,22,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header.nav.stuck{background:rgba(14,17,22,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:13px;letter-spacing:.14em}
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--built);box-shadow:0 0 10px var(--built);animation:pulse 2.4s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
@@ -473,7 +473,7 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
         <article class="proj reveal" style="--rt:40%">
           <div class="p-no" aria-hidden="true">/02</div>
           <div class="p-main">
-            <h3><span class="p-title">Scout → SpoilerShield<span class="arw" aria-hidden="true">↗</span></span></h3>
+            <h3><span class="p-title">Scout → SpoilerShield</span></h3>
             <div class="p-role">Hackathon team build → ongoing · Browser extension</div>
             <p class="p-desc">Started as Scout, a customizable browser extension blocking World Cup spoilers, built with my team — <b style="color:var(--paper)">3rd place at the UCC ACM World Cup Hackathon</b>. Since grown into SpoilerShield: a Chrome extension that blurs text and images about any show, film or team you don't want spoiled, using on-device AI (Chrome's built-in Gemini Nano) with Wikipedia and TMDB data — no backend, no telemetry.</p>
             <div class="p-tags"><span class="tag">Browser extension</span><span class="tag">On-device AI</span><span class="tag">Chrome MV3</span><span class="tag">3rd place</span></div>
@@ -505,7 +505,7 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
         <article class="proj reveal" style="--rt:0%">
           <div class="p-no" aria-hidden="true">/04</div>
           <div class="p-main">
-            <h3><span class="p-title">Guardian<span class="arw" aria-hidden="true">↗</span></span></h3>
+            <h3><span class="p-title">Guardian</span></h3>
             <div class="p-role">Hardware · Mechatronics</div>
             <p class="p-desc">A location-tracking safety device children clip to their backpack on the way to school — a safe substitute for a smartphone, aimed at parents. Arduino UNO + SIM808 GPS/GSM with an accelerometer for crash detection: automatic SMS arrival notifications, live location sharing and a one-press SOS alert. <b style="color:var(--paper)">Designed, built and pitched with my project group in six weeks</b>, then shown at Trinity's Research &amp; Innovation Showcase 2026.</p>
             <div class="p-tags"><span class="tag">Mechatronics</span><span class="tag">Arduino · GPS/GSM</span><span class="tag">Crash detection</span><span class="tag">6-week build</span></div>
@@ -521,7 +521,7 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
         <article class="proj reveal" style="--rt:80%">
           <div class="p-no" aria-hidden="true">/05</div>
           <div class="p-main">
-            <h3><span class="p-title">TOP<span class="arw" aria-hidden="true">↗</span></span></h3>
+            <h3><span class="p-title">TOP</span></h3>
             <div class="p-role">Research · Prototype</div>
             <p class="p-desc">Token Optimisation Protocol — researching how AI usage costs behave in the real world, and whether a session's cost can be predicted before it's spent. A measurement study over real usage data turned up meaningful findings inside two weeks; a first research paper is in draft.</p>
             <div class="p-tags"><span class="tag">AI research</span><span class="tag">Cost prediction</span><span class="tag">Measurement study</span><span class="tag">Paper in draft</span></div>
@@ -693,13 +693,16 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
   try{seen=!!sessionStorage.getItem('booted2');}catch(e){}
   if(reduce||seen){finish();return;}
   try{sessionStorage.setItem('booted2','1');}catch(e){}
+  const skip=()=>{clearInterval(iv);finish();};
+  boot.addEventListener('click',skip);
+  addEventListener('keydown',function once(){if(!boot.classList.contains('done'))skip();removeEventListener('keydown',once);});
   let p=0; const iv=setInterval(()=>{
-    p+=Math.random()*9+3;
+    p+=Math.random()*10+8;
     if(p>=100){p=100;clearInterval(iv);setTimeout(finish,420);}
     fill.style.right=(100-p)+'%';
     pct.textContent='LOADING DRAWING… '+String(Math.floor(p)).padStart(3,'0')+'%';
     stage.textContent=stages[Math.min(stages.length-1,Math.floor(p/22))];
-  },130);
+  },80);
 })();
 
 /* ============ GEAR TRAIN — the signature. Cursor drives it. ============ */
@@ -723,7 +726,11 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
     W=cv.clientWidth; H=cv.clientHeight;
     cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
   }
-  size(); window.addEventListener('resize',size);
+  size(); window.addEventListener('resize',()=>{size();if(reduce)frame();});
+  if(document.fonts) document.fonts.ready.then(()=>{ if(reduce) frame(); });
+  /* the cursor hint is wrong on touch (no cursor) and under reduced motion (static frame) */
+  const hint=document.querySelector('.scope-foot span:nth-child(2)');
+  if(hint){ if(reduce) hint.textContent='static view'; else if(matchMedia('(pointer:coarse)').matches) hint.textContent='drive: auto'; }
 
   cv.addEventListener('pointermove',e=>{
     const r=cv.getBoundingClientRect();
@@ -766,16 +773,9 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
     ctx.strokeStyle='rgba(41,50,63,.9)'; ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
 
     // layout gears tangent along baseline, scaled to fit
-    const unit=1;
-    let radii=gears.map(g=>g.z*unit);
-    // idler (last) sits above gear[2] instead of inline
-    const inline=[0,1,2];
-    let totalW=0; for(let i of inline) totalW+=radii[i]*2; totalW-=0; // sum diameters
-    // spacing = sum of tangent gaps
-    let span=radii[0]+2*radii[1]+2*radii[2]; // centre0..centre2 distance approx
+    let radii=gears.map(g=>g.z);
     // compute a scale so the assembly fits ~70% width and ~ H
     const wantW=W*0.62, wantH=H*0.66;
-    const rawSpan=(radii[0])+ (radii[0]+radii[1]) + (radii[1]+radii[2]); // x of last centre from first edge-ish
     let sc=Math.min(wantW/(2*radii[2]+ (radii[0]+radii[1])+(radii[1]+radii[2])), wantH/(2*radii[2]));
     sc=Math.max(sc,0.6);
     const R=radii.map(r=>r*sc);
@@ -811,10 +811,13 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
     const rpm=Math.abs(drive)*1900;
     if(readA) readA.textContent='RPM '+String(Math.round(rpm)).padStart(3,'0');
     if(readB) readB.textContent='RATIO '+gears[0].z+':'+gears[2].z;
-
-    if(!reduce) requestAnimationFrame(frame);
   }
-  if(reduce){ ang=0.4; frame(); } else requestAnimationFrame(frame);
+  /* render only while the hero canvas is on screen — shadowBlur strokes at 60fps are not free */
+  let vis=true, running=false;
+  function tick(){ if(!vis){ running=false; return; } frame(); requestAnimationFrame(tick); }
+  function start(){ if(!running&&!reduce){ running=true; requestAnimationFrame(tick); } }
+  new IntersectionObserver(es=>{ vis=es[0].isIntersecting; if(vis) start(); }).observe(cv);
+  if(reduce){ ang=0.4; frame(); } else start();
 })();
 
 /* ============ CUSTOM CURSOR ============ */
@@ -824,10 +827,15 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
   const dot=document.getElementById('cur'), ring=document.getElementById('curRing');
   let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
   addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;dot.style.transform='translate('+mx+'px,'+my+'px)';});
-  const hot='a,button,.proj,.int-card,.exp-card,.c-link,.btn';
+  const hot='a,button';
   addEventListener('pointerover',e=>{ if(e.target.closest(hot)) ring.classList.add('hot'); });
   addEventListener('pointerout',e=>{ if(e.target.closest(hot)) ring.classList.remove('hot'); });
-  (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.transform='translate('+rx+'px,'+ry+'px)'; requestAnimationFrame(loop); })();
+  let ringOn=false;
+  function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.transform='translate('+rx+'px,'+ry+'px)';
+    if(Math.abs(mx-rx)<.2&&Math.abs(my-ry)<.2){ ringOn=false; return; } requestAnimationFrame(loop); }
+  function wake(){ if(!ringOn){ ringOn=true; requestAnimationFrame(loop); } }
+  addEventListener('pointermove',wake);
+  wake();
 })();
 
 /* ============ NAV ============ */
@@ -842,6 +850,20 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
   addEventListener('click',e=>{if(links.classList.contains('open')&&!e.target.closest('.nav'))setOpen(false);});
   addEventListener('resize',()=>{if(innerWidth>860&&links.classList.contains('open'))setOpen(false);});
   stuck();
+})();
+
+/* ============ MAIL COPY — mailto silently no-ops on machines with no mail client ============ */
+(function(){
+  const link=document.querySelector('.c-link[href^="mailto:"]');
+  if(!link||!navigator.clipboard) return;
+  const k=link.querySelector('.k'); let t;
+  link.addEventListener('click',()=>{
+    navigator.clipboard.writeText('samoconnell06@gmail.com').then(()=>{
+      if(!k) return;
+      k.textContent='copied'; k.style.color='var(--built)';
+      clearTimeout(t); t=setTimeout(()=>{ k.textContent='mail'; k.style.color=''; },1500);
+    }).catch(()=>{});
+  });
 })();
 
 /* ============ REVEAL ============ */
