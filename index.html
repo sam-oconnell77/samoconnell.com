@@ -384,7 +384,7 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
           <!-- PHOTO: drop your headshot in as photo.jpg (same folder) and it appears automatically -->
           <div class="photo">
             <img src="photo.jpg" alt="Sam O'Connell" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-            <div class="ph-empty" style="display:none">[ your<br>photo ]</div>
+            <div class="ph-empty" style="display:none">FIG. 01<br>portrait<br>pending</div>
             <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
           </div>
           <div class="hero-meta">Dublin, IE<br><b>Originally Cork</b></div>
@@ -877,8 +877,14 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
   const ticks=document.getElementById('calTicks'),ind=document.getElementById('calInd'),pct=document.getElementById('calPct');
   if(!ticks) return;
   const N=40; for(let i=0;i<=N;i++){const el=document.createElement('div');el.className='cal-tick'+(i%5===0?' major':'');el.style.top=(i/N*100)+'%';ticks.appendChild(el);}
-  function update(){const h=document.documentElement.scrollHeight-innerHeight;const p=h>0?scrollY/h:0;ind.style.top=(p*ticks.parentElement.clientHeight)+'px';if(pct)pct.textContent=String(Math.round(p*100)).padStart(3,'0');}
-  addEventListener('scroll',update,{passive:true}); addEventListener('resize',update); update();
+  /* cache layout metrics: reading scrollHeight/clientHeight inside the scroll handler forces layout */
+  const mq=matchMedia('(max-width:860px)');
+  let h=0,th=0;
+  function measure(){h=document.documentElement.scrollHeight-innerHeight;th=ticks.clientHeight;}
+  function update(){if(mq.matches)return;const p=h>0?Math.min(1,scrollY/h):0;ind.style.top=(p*(th-2))+'px';if(pct)pct.textContent=String(Math.round(p*100)).padStart(3,'0');}
+  addEventListener('scroll',update,{passive:true});
+  addEventListener('resize',()=>{measure();update();});
+  measure();update();
 })();
 </script>
 </body>
