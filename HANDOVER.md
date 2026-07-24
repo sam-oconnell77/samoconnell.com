@@ -110,7 +110,7 @@ All content came from a questionnaire Sam filled in. **Most is real.** These are
 
 ### Needs confirming
 
-- **Award years.** The **Naughton Scholarship** and **Trinity Entrance Exhibition** are both dated **2024** on the site — that was inferred from his 2024 college entry, **not stated by him**. Confirm before the site goes public. (IAMTA 2024 and UCC hackathon 2026 *were* stated.)
+- **Award years: CONFIRMED.** Sam confirmed (23 Jul 2026, Claude Code session) that the **Naughton Scholarship** and **Trinity Entrance Exhibition** are both **2024**. (IAMTA 2024 and UCC hackathon 2026 were stated originally.)
 - **CV link.** Points to a Google Drive file. **Check the sharing permission is "anyone with the link"** — otherwise visitors hit a request-access wall.
 
 ### Written by Claude, not by Sam (fine to rewrite)
