@@ -52,7 +52,7 @@ All tokens are CSS custom properties in the `:root` block at the top of `index.h
 ```
 --ink       #0E1116   base / casing        --paper      #ECE6DA   primary text
 --ink-2     #0A0C10   deepest well         --paper-dim  #B9C0CB   secondary text
---panel     #151A22   raised surface       --muted      #6C7688   labels, captions
+--panel     #151A22   raised surface       --muted      #7A8496   labels, captions (retuned 23 Jul 2026 for WCAG AA)
 --panel-2   #1B222C   card face            --draft      #F7A93B   ACCENT (amber draw line)
 --line      #29323F   hairlines, grid      --built      #57C88A   shipped / built / pass
 --line-2    #3A4655   brighter tick
