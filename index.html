@@ -288,6 +288,21 @@ footer .amp{color:var(--draft)}
   html{scroll-behavior:auto}
 }
 </style>
+<noscript><style>
+/* JS off: no script ever dismisses the boot screen or reveals content — do both in CSS */
+#boot{display:none}
+body.locked{overflow:auto;height:auto}
+.reveal{opacity:1;transform:none}
+body,a,button,.proj,.int-card,.exp-card{cursor:auto}
+#cur,#curRing{display:none !important}
+/* the photo swap, meter fills, and menu toggle are all script-driven — degrade each in CSS */
+.photo img{display:none}
+.photo .ph-empty{display:flex !important}
+.proj .pm-fill{right:var(--rt,20%)}
+header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
+@media (max-width:860px){.nav-toggle{display:none}}
+.scope-wrap,.cal-rail{display:none}
+</style></noscript>
 </head>
 <body class="locked">
 <div id="cur"></div><div id="curRing"></div>
@@ -631,10 +646,30 @@ footer .amp{color:var(--draft)}
 </footer>
 
 <script>
+/* ============ BOOT — must run first: nothing else may stand between the visitor and finish() ============ */
+(function(){
+  const boot=document.getElementById('boot'),fill=document.getElementById('bootFill'),pct=document.getElementById('bootPct'),stage=document.getElementById('bootStage');
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stages=['loading sheet','setting datum','meshing gears','tightening bolts','ready'];
+  function finish(){boot.classList.add('done');document.body.classList.remove('locked');}
+  /* touching sessionStorage throws when the browser blocks all cookies/storage */
+  let seen=false;
+  try{seen=!!sessionStorage.getItem('booted2');}catch(e){}
+  if(reduce||seen){finish();return;}
+  try{sessionStorage.setItem('booted2','1');}catch(e){}
+  let p=0; const iv=setInterval(()=>{
+    p+=Math.random()*9+3;
+    if(p>=100){p=100;clearInterval(iv);setTimeout(finish,420);}
+    fill.style.right=(100-p)+'%';
+    pct.textContent='LOADING DRAWING… '+String(Math.floor(p)).padStart(3,'0')+'%';
+    stage.textContent=stages[Math.min(stages.length-1,Math.floor(p/22))];
+  },130);
+})();
+
 /* ============ GEAR TRAIN — the signature. Cursor drives it. ============ */
 (function(){
   const cv=document.getElementById('scope'); if(!cv) return;
-  const ctx=cv.getContext('2d');
+  const ctx=cv.getContext('2d'); if(!ctx) return;
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const readA=document.getElementById('scopeReadA'), readB=document.getElementById('scopeReadB');
   let W,H,dpr, drive=0.006, targetDrive=0.006, ang=0;
@@ -757,23 +792,6 @@ footer .amp{color:var(--draft)}
   addEventListener('pointerover',e=>{ if(e.target.closest(hot)) ring.classList.add('hot'); });
   addEventListener('pointerout',e=>{ if(e.target.closest(hot)) ring.classList.remove('hot'); });
   (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.transform='translate('+rx+'px,'+ry+'px)'; requestAnimationFrame(loop); })();
-})();
-
-/* ============ BOOT ============ */
-(function(){
-  const boot=document.getElementById('boot'),fill=document.getElementById('bootFill'),pct=document.getElementById('bootPct'),stage=document.getElementById('bootStage');
-  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const stages=['loading sheet','setting datum','meshing gears','tightening bolts','ready'];
-  function finish(){boot.classList.add('done');document.body.classList.remove('locked');}
-  if(reduce||sessionStorage.getItem('booted2')){finish();return;}
-  sessionStorage.setItem('booted2','1');
-  let p=0; const iv=setInterval(()=>{
-    p+=Math.random()*9+3;
-    if(p>=100){p=100;clearInterval(iv);setTimeout(finish,420);}
-    fill.style.right=(100-p)+'%';
-    pct.textContent='LOADING DRAWING… '+String(Math.floor(p)).padStart(3,'0')+'%';
-    stage.textContent=stages[Math.min(stages.length-1,Math.floor(p/22))];
-  },130);
 })();
 
 /* ============ NAV ============ */
