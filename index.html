@@ -89,7 +89,7 @@ html{scrollbar-color:var(--line-2) var(--ink-2)}
 ::-webkit-scrollbar{width:11px}
 ::-webkit-scrollbar-track{background:var(--ink-2)}
 ::-webkit-scrollbar-thumb{background:var(--line-2);border:3px solid var(--ink-2);border-radius:6px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+@media (hover:hover){::-webkit-scrollbar-thumb:hover{background:var(--muted)}}
 a:focus-visible,button:focus-visible{outline:2px solid var(--draft);outline-offset:3px;border-radius:2px}
 .skip{position:fixed;top:12px;left:12px;z-index:200;padding:12px 18px;background:var(--ink-2);border:1px solid var(--draft);color:var(--draft);font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;transform:translateY(-300%);transition:transform .2s var(--ease)}
 .skip:focus{transform:none}
@@ -236,7 +236,9 @@ section{position:relative;padding:clamp(90px,14vh,160px) 0}
 
 /* ============ PROJECTS ============ */
 .proj-list{margin-top:52px;border-top:1px solid var(--line)}
-.proj{display:grid;grid-template-columns:56px 1fr auto;gap:clamp(18px,3vw,48px);padding:34px 0;border-bottom:1px solid var(--line);position:relative;transition:background .3s var(--ease)}
+.proj{display:grid;grid-template-columns:56px 1fr auto;gap:clamp(18px,3vw,48px);padding:34px 0;border-bottom:1px solid var(--line);position:relative}
+/* hover transitions attach only after reveal (.in) so they can't override .reveal's fade-in */
+.proj.in{transition:background .3s var(--ease)}
 @media (hover:hover){.proj:hover{background:linear-gradient(90deg,var(--draft-soft),transparent 60%)}}
 .proj .p-no{font-family:var(--f-mono);font-size:13px;color:var(--muted);padding-top:6px}
 @media (hover:hover){.proj:hover .p-no{color:var(--draft)}}
@@ -276,7 +278,8 @@ section{position:relative;padding:clamp(90px,14vh,160px) 0}
 
 /* ============ ROLES ============ */
 .exp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:52px}
-.exp-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:24px;transition:border-color .3s var(--ease),transform .3s var(--ease);position:relative;overflow:hidden}
+.exp-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:24px;position:relative;overflow:hidden}
+.exp-card.in{transition:border-color .3s var(--ease),transform .3s var(--ease)}
 .exp-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--line);transition:background .3s}
 @media (hover:hover){.exp-card:hover{border-color:var(--line-2);transform:translateY(-3px)}
 .exp-card:hover::after{background:var(--draft)}}
@@ -288,7 +291,8 @@ section{position:relative;padding:clamp(90px,14vh,160px) 0}
 
 /* ============ INTERESTS ============ */
 .int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:52px}
-.int-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:22px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
+.int-card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:22px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
+.int-card.in{transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease)}
 @media (hover:hover){.int-card:hover{border-color:var(--draft);background:var(--panel-2);transform:translateY(-3px)}
 .int-card:hover .ic-tag{color:var(--paper-dim)}}
 .int-card .ic-tag{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
