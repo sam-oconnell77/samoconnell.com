@@ -347,9 +347,7 @@ body.locked{overflow:auto;height:auto}
 .reveal{opacity:1;transform:none}
 body,a,button,.proj,.int-card,.exp-card{cursor:auto}
 #cur,#curRing{display:none !important}
-/* the photo swap, meter fills, and menu toggle are all script-driven — degrade each in CSS */
-.photo img{display:none}
-.photo .ph-empty{display:flex !important}
+/* the meter fills and menu toggle are script-driven — degrade each in CSS (the photo loads fine without JS) */
 .proj .pm-fill{right:var(--rt,20%)}
 header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
 @media (max-width:860px){.nav-toggle{display:none}.nav-links{display:flex;position:static;flex-direction:column;background:none;border-bottom:0;padding:0}header.nav{position:static}}
@@ -399,9 +397,9 @@ header.nav{background:rgba(14,17,22,.72);border-bottom:1px solid var(--line)}
     <div class="wrap">
       <div class="hero-top reveal in">
         <div class="hero-idlft">
-          <!-- PHOTO: drop your headshot in as photo.jpg (same folder) and it appears automatically -->
+          <!-- PHOTO: photo.webp (348x480, transparent bg); onerror fallback shows the FIG. 01 annotation -->
           <div class="photo">
-            <img src="photo.jpg" alt="Sam O'Connell" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+            <img src="photo.webp" alt="Sam O'Connell" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
             <div class="ph-empty" style="display:none">FIG. 01<br>portrait<br>pending</div>
             <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
           </div>

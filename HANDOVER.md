@@ -127,7 +127,7 @@ No answers for: additional interests, what he's currently reading, whether he wa
 
 | Asset | Where it goes |
 |---|---|
-| **Headshot** | Save as `photo.jpg` beside `index.html` — the hero slot picks it up automatically (the `onerror` fallback now shows a deliberate "FIG. 01 — PORTRAIT PENDING" annotation until then). |
+| **Headshot** | **DONE 25 Jul 2026** — `photo.webp` (348×480 transparent-background, 15 KB, resized from Sam's original which stays untracked via `.gitignore`). The `onerror` fallback ("FIG. 01 — PORTRAIT PENDING") remains as insurance. |
 | Scout screenshot | Project 02 — no image slot built yet |
 | Guardian screenshot | Project 04 — no image slot built yet |
 | Excel certificate | No slot yet; he offered to provide it |
