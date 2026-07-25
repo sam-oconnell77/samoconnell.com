@@ -15,7 +15,7 @@ This **supersedes the earlier handover** of the same date (written before any co
 | Code | `index.html` — a single self-contained file, ~850 lines / 57 KB (+ `og.png`, `apple-touch-icon.png`). No build step, no dependencies to install. |
 | Repo | **Local git** (initialised 23 Jul 2026; see `git log` for the change record). No GitHub remote yet. |
 | Deployment | **None yet.** |
-| Domain | `samoconnell.com` — registered, **parked at Porkbun** (A records `207.207.210.50` / `207.207.210.36`; `www` CNAMEs to the same). Parking default `robots.txt` blocks all crawling. |
+| Domain | **CORRECTION 25 Jul 2026:** `samoconnell.com` is NOT Sam's (registered 25 Dec 2025 by an unrelated party; the earlier "registered" claim was a wrong inference from DNS). The site's domain is **`sam-oconnell.com`**, bought by Sam via Vercel. §8's Porkbun instructions are obsolete — Vercel manages the DNS. |
 | Vercel | Team **"Sam's projects"** (`sam-oconnell77-projects`, id `team_uQtafh2byaXdg7AmaEtxC8hI`). Only project: `slotspace`. |
 | GitHub | `sam-oconnell77` |
 
