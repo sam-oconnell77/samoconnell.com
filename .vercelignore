@@ -1,0 +1,6 @@
+# repo docs and config — never serve these on the live site
+HANDOVER.md
+CLAUDE.md
+README.md
+.gitignore
+.vercelignore
