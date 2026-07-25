@@ -1,4 +1,5 @@
-# repo docs and config — never serve these on the live site
+# repo docs, config and source assets — never serve these on the live site
+IMG_9309-removebg-preview.png
 HANDOVER.md
 CLAUDE.md
 README.md
