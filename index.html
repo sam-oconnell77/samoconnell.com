@@ -142,7 +142,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--draft);outline-offs
 .cal-tick{position:absolute;left:0;height:1px;width:8px;background:var(--line-2)}
 .cal-tick.major{width:16px;background:var(--muted)}
 .cal-ind{position:absolute;left:8px;width:22px;height:2px;background:var(--draft);box-shadow:0 0 10px var(--draft);transition:top .08s linear}
-.cal-read{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(90deg);white-space:nowrap;
+/* left:45px, not 50% — the rotated label must clear the major ticks and indicator, which both end at 31px */
+.cal-read{position:absolute;top:50%;left:45px;transform:translate(-50%,-50%) rotate(90deg);white-space:nowrap;
   font-family:var(--f-mono);font-size:10px;letter-spacing:.32em;color:var(--muted);text-transform:uppercase}
 .cal-pct{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px;color:var(--draft);letter-spacing:.1em}
 
